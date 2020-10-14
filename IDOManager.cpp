@@ -1,17 +1,26 @@
 #include "IDOManager.h"
 #include "IDOSException.h"
+#include <iostream>
+#include <boost/uuid/uuid_io.hpp>
+
 using namespace idos;
 
-const std::unordered_map<std::string, IDOManager::Value> &IDOManager::getAliasList()const{
+const std::unordered_map<std::string, IDO::ID> &IDOManager::getAliasList()const{
     return this->alias;
 }
 const std::unordered_map<std::string, IDO*> &IDOManager::getTypes()const{
     return this->types;
 }
 
-IDOManager::Value IDOManager::getAlias(const std::string &alias)const{
+IDOManager::Value IDOManager::getAlias(const std::string &alias){
+    auto id = this->getAliasID(alias);
+    return IDOManager::Value(id, this->at(id));
+}
+
+IDO::ID IDOManager::getAliasID(const std::string& alias)const{
     return this->alias.at(alias);
 }
+
 
 bool IDOManager::hasAlias(const std::string &alias)const{
     try{
@@ -22,9 +31,11 @@ bool IDOManager::hasAlias(const std::string &alias)const{
         return false;
     }
 }
+IDO::ID IDOManager::generateNewID(){
+    return this->dis(this->rand);
+}
 
-
-IDOManager::Value IDOManager::instantiateIDO(const std::string &type, DataPack &init){
+IDOManager::Value IDOManager::instantiateIDO(const std::string &type, IDO::ID id, DataPack &init){
     IDO* newValue = nullptr;
     try{
         newValue = this->types.at(type)->clone();
@@ -32,14 +43,17 @@ IDOManager::Value IDOManager::instantiateIDO(const std::string &type, DataPack &
         throw IDOSException("TRIED INSTANTIATING IDO OF UNKNOWN TYPE!");
     }
     newValue->unpack(init);
-    ID newID = this->gen();
-    this->instances.insert(std::pair(newID, newValue));
-    IDOManager::Value wrap(newID, newValue);
+    this->instances.insert(std::pair(id, newValue));
+    IDOManager::Value wrap(id, newValue);
     this->instancesByType[type].push_back(wrap);
     return wrap;
 }
 
-IDO* IDOManager::at(IDOManager::ID id){
+IDOManager::Value IDOManager::instantiateIDO(const std::string &type, DataPack &init){
+    return this->instantiateIDO(type, this->generateNewID(), init);
+}
+
+IDO* IDOManager::at(IDO::ID id){
     try{
         return this->instances.at(id);
     }catch(const std::out_of_range &ex){
@@ -47,7 +61,7 @@ IDO* IDOManager::at(IDOManager::ID id){
     }
 }
 
-bool IDOManager::hasValue(ID id)const{
+bool IDOManager::hasValue(IDO::ID id)const{
     try{
         this->instances.at(id);
         return true;
@@ -66,7 +80,7 @@ const std::vector<IDOManager::Value>& IDOManager::getInstancesOfType(const std::
     }
 }
 
-void IDOManager::registerAlias(const std::string &alias, IDOManager::Value value){
+void IDOManager::registerAlias(const std::string &alias, IDO::ID value){
     this->alias.insert(std::pair(alias, value));
 }
 

@@ -1,35 +1,41 @@
 #pragma once
 #include <unordered_map>
 #include "ido.h"
-#include <boost/uuid/uuid.hpp>
-#include <boost/functional/hash.hpp>
-#include <boost/uuid/random_generator.hpp>
+#include <random>
 namespace idos{
     class IDOManager{
     public:
-        typedef boost::uuids::uuid ID;
-        typedef std::pair<ID, IDO*> Value;
+        typedef std::pair<IDO::ID, IDO*> Value;
     private: 
-        std::unordered_map<std::string, Value> alias;
+        std::unordered_map<std::string, IDO::ID> alias;
         std::unordered_map<std::string, IDO*> types;
-        std::unordered_map<ID, IDO*,boost::hash<ID>> instances;
+        std::unordered_map<IDO::ID, IDO*> instances;
         std::unordered_map<std::string, std::vector<Value>> instancesByType;
-        boost::uuids::random_generator gen;
-    public:
-        const std::unordered_map<std::string, Value> &getAliasList()const;
+        std::uniform_int_distribution<unsigned long long> dis; 
+        std::random_device rand;
+     public:
+        IDOManager()
+        :dis(std::numeric_limits<std::uint64_t>::min(),
+        std::numeric_limits<std::uint64_t>::max()){}
+
+        const std::unordered_map<std::string, IDO::ID> &getAliasList()const;
         const std::unordered_map<std::string, IDO*> &getTypes()const; 
 
-        Value getAlias(const std::string &alias)const;
+        Value getAlias(const std::string &alias);
+        IDO::ID getAliasID(const std::string& alias)const;
         bool hasAlias(const std::string &alias)const;
 
+        IDO::ID generateNewID();
+
+        Value instantiateIDO(const std::string &type, IDO::ID id, DataPack &init);
         Value instantiateIDO(const std::string &type, DataPack &init);
 
-        IDO* at(ID id);
-        bool hasValue(ID id)const;
+        IDO* at(IDO::ID id);
+        bool hasValue(IDO::ID id)const;
 
         const std::vector<Value>& getInstancesOfType(const std::string &type);
 
-        void registerAlias(const std::string &alias, Value value);
+        void registerAlias(const std::string &alias, IDO::ID id);
         void registerType(const std::string &typeName, IDO* instanceTemplate);
 
         void unregisterAlias(const std::string &alias);

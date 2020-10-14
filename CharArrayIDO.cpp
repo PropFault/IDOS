@@ -1,5 +1,7 @@
 #include "CharArrayIDO.h"
 #include <cstring>
+#include <iostream>
+#include <boost/uuid/uuid_serialize.hpp>
 const std::string CharArrayIDO::PARAMS_TEXT = "Text";
 
 
@@ -19,12 +21,17 @@ idos::DataPack CharArrayIDO::_pack()const{
     pack[PARAMS_TEXT] = std::string(this->text);
     return pack;
 }
-void CharArrayIDO::_unpack(const idos::DataPack &pack){
-    std::string wrappedText = std::any_cast<std::string>(pack.at(PARAMS_TEXT));
+void CharArrayIDO::_unpack(const idos::DataPack &pack ){
+    std::string wrappedText = pack.at(PARAMS_TEXT).get<std::string>();
     if(this->text != NULL)
         delete[] this->text;
     this->text = new char[wrappedText.length()+1];
     std::strcpy(this->text, wrappedText.c_str());
+    try{
+        this->self = pack.at("self").get<uint64_t>();
+    }catch(const nlohmann::json::out_of_range &ex){
+
+    }
 }
 
 const char* CharArrayIDO::getText()

@@ -1,7 +1,0 @@
-{
-    "type": "CharArray",
-    "displayName": "Hehe",
-    "alias": "myCharArray",
-    "text": 22.0,
-    "player": {"ref": "player01"}
-}

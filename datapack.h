@@ -1,7 +1,5 @@
 #pragma once
-#include <string>
-#include <unordered_map>
-#include <any>
+#include <nlohmann/json.hpp>
 namespace idos{
-    typedef std::unordered_map<std::string, std::any> DataPack;
+    typedef nlohmann::json DataPack;
 }
