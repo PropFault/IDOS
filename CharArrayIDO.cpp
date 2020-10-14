@@ -1,7 +1,6 @@
 #include "CharArrayIDO.h"
 #include <cstring>
 #include <iostream>
-#include <boost/uuid/uuid_serialize.hpp>
 const std::string CharArrayIDO::PARAMS_TEXT = "Text";
 
 

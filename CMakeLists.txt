@@ -15,7 +15,7 @@ endif()
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
-conan_cmake_run(REQUIRES nlohmann_json/3.9.1 boost/1.74.0 
+conan_cmake_run(REQUIRES nlohmann_json/3.9.1
                 BASIC_SETUP 
                 BUILD missing)
             

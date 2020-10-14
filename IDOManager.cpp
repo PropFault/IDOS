@@ -1,7 +1,6 @@
 #include "IDOManager.h"
 #include "IDOSException.h"
 #include <iostream>
-#include <boost/uuid/uuid_io.hpp>
 
 using namespace idos;
 

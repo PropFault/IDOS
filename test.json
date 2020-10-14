@@ -1,0 +1,7 @@
+{
+    "type": "CharArray",
+    "displayName": "Hehe",
+    "alias": "myCharArray",
+    "Text": "muhAss",
+    "self": {"ref": "myCharArray"}
+}
