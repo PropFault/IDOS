@@ -36,6 +36,15 @@ IDO::ID IDODAO::loadIDOSFromJSON(const nlohmann::json &json)
     {
         if (el.value().type() == nlohmann::json::value_t::object)
             dataPack[el.key()] = loadIDOSFromJSON(el.value());
+        if(el.value().type() == nlohmann::json::value_t::array){
+            int idx = 0;
+            for(auto &i : el.value().items()){
+                if(i.value().type() == nlohmann::json::value_t::object){
+                    dataPack[el.key()][idx] = loadIDOSFromJSON(i.value());
+                }
+                idx++;
+            }
+        }
     }
     std::cout<<dataPack<<std::endl;
     try
@@ -61,6 +70,15 @@ DataPack prepareIDsForSerialization(DataPack &pack, idos::IDOManager & manager, 
     for(auto& elem : pack.items()){
         if(elem.value().type() == nlohmann::json::value_t::object){
             pack[elem.key()] = prepareIDsForSerialization(elem.value(), manager, false); 
+        }
+        if(elem.value().type() == nlohmann::json::value_t::array){
+            int idx = 0;
+            for(auto &i : elem.value().items()){
+                if(i.value().type() == nlohmann::json::value_t::object){
+                    pack[elem.key()][idx] = prepareIDsForSerialization(i.value(), manager, false);
+                }
+                idx++;
+            }
         }
     }
     try{

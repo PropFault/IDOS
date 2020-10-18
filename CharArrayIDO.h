@@ -3,9 +3,11 @@
 #include <string>
 #include <memory>
 #include "IDOManager.h"
+#include <vector>
 class CharArrayIDO : public idos::IDO{
 private:
     char* text = NULL;
+    std::vector<ID> texts;
 protected:
     virtual idos::DataPack _pack()const;
     virtual void _unpack(const idos::DataPack &pack);

@@ -7,5 +7,12 @@
     "child":{
         "type": "CharArray",
         "Text": "I am a child"
-    }
+    },
+    "messages":[
+        {"type": "CharArray",
+        "Text": "Element 1"},
+        {"type": "CharArray", "Text": "Element 2", "displayName": "Element 2"},
+        {"type": "CharArray", "Text": "Element 3rd", "displayName": "Element three"},
+        {"type": "CharArray", "Text": "Element 4th", "displayName": "Element 4"}
+    ]
 }

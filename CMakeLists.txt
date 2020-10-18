@@ -20,8 +20,8 @@ conan_cmake_run(REQUIRES nlohmann_json/3.9.1
                 BUILD missing)
             
 
-#add_executable(IDOS main.cpp ido.cpp IDOManager.cpp ManagedValue.cpp CharArrayIDO.cpp idodao.cpp)
-add_library(IDOS ido.cpp IDOManager.cpp ManagedValue.cpp CharArrayIDO.cpp idodao.cpp)
+add_executable(IDOS main.cpp ido.cpp IDOManager.cpp ManagedValue.cpp CharArrayIDO.cpp idodao.cpp)
+#add_library(IDOS ido.cpp IDOManager.cpp ManagedValue.cpp CharArrayIDO.cpp idodao.cpp)
 set_property(TARGET IDOS PROPERTY CXX_STANDARD 17)
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

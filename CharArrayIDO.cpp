@@ -19,6 +19,10 @@ idos::DataPack CharArrayIDO::_pack()const{
     idos::DataPack pack;
     pack[PARAMS_TEXT] = std::string(this->text);
     pack["child"] = this->self;
+    pack["messages"] = nlohmann::json::array();
+    for(int i = 0; i < this->texts.size(); i++){
+        pack["messages"][i] = this->texts.at(i);
+    }
     return pack;
 }
 void CharArrayIDO::_unpack(const idos::DataPack &pack ){
@@ -31,6 +35,12 @@ void CharArrayIDO::_unpack(const idos::DataPack &pack ){
         this->self = pack.at("child").get<idos::IDO::ID>();
     }catch(const nlohmann::json::out_of_range &ex){
 
+    }
+    try{
+        for(auto &i : pack.at("messages"))
+            this->texts.push_back(i);
+    }catch(const nlohmann::json::out_of_range &ex){
+        
     }
 }
 
