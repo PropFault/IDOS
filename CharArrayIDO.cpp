@@ -18,6 +18,7 @@ CharArrayIDO::CharArrayIDO(const CharArrayIDO& other){
 idos::DataPack CharArrayIDO::_pack()const{
     idos::DataPack pack;
     pack[PARAMS_TEXT] = std::string(this->text);
+    pack["child"] = this->self;
     return pack;
 }
 void CharArrayIDO::_unpack(const idos::DataPack &pack ){
@@ -27,7 +28,7 @@ void CharArrayIDO::_unpack(const idos::DataPack &pack ){
     this->text = new char[wrappedText.length()+1];
     std::strcpy(this->text, wrappedText.c_str());
     try{
-        this->self = pack.at("self").get<uint64_t>();
+        this->self = pack.at("child").get<idos::IDO::ID>();
     }catch(const nlohmann::json::out_of_range &ex){
 
     }

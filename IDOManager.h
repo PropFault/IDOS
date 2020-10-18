@@ -22,7 +22,8 @@ namespace idos{
         const std::unordered_map<std::string, IDO*> &getTypes()const; 
 
         Value getAlias(const std::string &alias);
-        IDO::ID getAliasID(const std::string& alias)const;
+        IDO::ID getIDForAlias(const std::string& alias)const;
+        std::string getAliasForID(const IDO::ID& id)const;
         bool hasAlias(const std::string &alias)const;
 
         IDO::ID generateNewID();

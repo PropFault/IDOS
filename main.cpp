@@ -14,11 +14,13 @@ int main(int, char**) {
     
 
 
-    auto daFunny = dao.loadFromFile<CharArrayIDO>("./test.json");
+    auto daFunny = dao.loadFromFile<CharArrayIDO>("./../../test.json");
+    dao.saveToFile("./save.json", daFunny);
     auto id = daFunny.getIdentifier();
     std::cout << daFunny.getValue()->getText() << std::endl;
     std::cout << manager.at(id)->as<CharArrayIDO>()->getText()<< std::endl;
     std::cout << daFunny.getValue()->self << "=" << id<< std::endl;
+    std::cout << "PRINTING SELF: " << manager.at(daFunny.getValue()->self)->as<CharArrayIDO>()->getText() << std::endl;
 
     idos::DataPack initDaFunny;
     initDaFunny[idos::IDO::PROP_TYPE] = std::string("MyCharArray");

@@ -3,5 +3,9 @@
     "displayName": "Hehe",
     "alias": "myCharArray",
     "Text": "muhAss",
-    "self": {"ref": "myCharArray"}
+    "self": {"ref": "myCharArray"},
+    "child":{
+        "type": "CharArray",
+        "Text": "I am a child"
+    }
 }

@@ -70,6 +70,7 @@
         "ctime": "cpp",
         "strstream": "cpp",
         "iomanip": "cpp",
-        "cfenv": "cpp"
+        "cfenv": "cpp",
+        "random": "cpp"
     }
 }

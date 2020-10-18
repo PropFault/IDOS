@@ -12,13 +12,21 @@ const std::unordered_map<std::string, IDO*> &IDOManager::getTypes()const{
 }
 
 IDOManager::Value IDOManager::getAlias(const std::string &alias){
-    auto id = this->getAliasID(alias);
+    auto id = this->getIDForAlias(alias);
     return IDOManager::Value(id, this->at(id));
 }
 
-IDO::ID IDOManager::getAliasID(const std::string& alias)const{
+IDO::ID IDOManager::getIDForAlias(const std::string& alias)const{
     return this->alias.at(alias);
 }
+std::string IDOManager::getAliasForID(const IDO::ID& id)const{
+    for(auto &entry : this->alias){
+        if(entry.second == id)
+        return entry.first;
+    }
+    throw IDOSException(std::string("No Alias for given ID found!"));
+}
+
 
 
 bool IDOManager::hasAlias(const std::string &alias)const{
@@ -31,6 +39,8 @@ bool IDOManager::hasAlias(const std::string &alias)const{
     }
 }
 IDO::ID IDOManager::generateNewID(){
+   /* IDO::ID id;
+    id.value = this->dis(this->rand);*/
     return this->dis(this->rand);
 }
 
