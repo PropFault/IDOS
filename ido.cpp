@@ -6,6 +6,10 @@ const std::string IDO::PROP_TYPE = "type";
 const std::string IDO::PROP_DISPLAY_NAME = "displayName";
 const std::string IDO::PROP_ALIAS = "alias";
 const std::string IDO::PROP_REF = "ref";
+
+IDO::IDO(const std::string &type)
+:type(type){}
+
 DataPack IDO::pack()const{
     DataPack basePack = this->_pack();
     basePack[PROP_TYPE] = this->type;
@@ -22,5 +26,9 @@ void IDO::unpack(const DataPack &pack){
     this->_unpack(pack);
 }
 
+
+const std::string& IDO::getType()const{
+    return this->type;
+}
 
 IDO::~IDO(){}

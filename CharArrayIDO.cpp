@@ -5,8 +5,9 @@ const std::string CharArrayIDO::PARAMS_TEXT = "Text";
 
 
 CharArrayIDO::CharArrayIDO()
-:text(NULL){};
-CharArrayIDO::CharArrayIDO(const CharArrayIDO& other){
+:IDO("CharArray"),text(NULL){};
+CharArrayIDO::CharArrayIDO(const CharArrayIDO& other)
+:IDO("CharArray"){
     if(other.text == NULL){
         this->text = NULL;
     }else{

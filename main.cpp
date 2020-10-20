@@ -10,7 +10,7 @@ int main(int, char**) {
     idos::IDOManager manager;
     idos::IDODAO dao(manager);
 
-    manager.registerType("CharArray", new CharArrayIDO);
+    manager.registerType(new CharArrayIDO);
     
 
 

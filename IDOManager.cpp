@@ -1,5 +1,6 @@
 #include "IDOManager.h"
 #include "IDOSException.h"
+#include <memory>
 #include <iostream>
 
 using namespace idos;
@@ -93,8 +94,8 @@ void IDOManager::registerAlias(const std::string &alias, IDO::ID value){
     this->alias.insert(std::pair(alias, value));
 }
 
-void IDOManager::registerType(const std::string &typeName, IDO* instanceTemplate){
-    this->types.insert(std::pair(typeName, instanceTemplate));
+void IDOManager::registerType(IDO* instanceTemplate){
+    this->types.insert(std::pair(instanceTemplate->getType(), instanceTemplate));
 }
 
 
@@ -105,6 +106,7 @@ void IDOManager::unregisterAlias(const std::string &alias){
 void IDOManager::unregisterType(const std::string &typeName){
     this->types.erase(typeName);
 }
+
 
 IDOManager::~IDOManager(){
     for(auto type : this->types)

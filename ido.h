@@ -31,6 +31,7 @@ namespace idos
         virtual void _unpack(const DataPack &pack) = 0;
 
     public:
+        IDO(const std::string &type);
         typedef ID_T ID;
 
         const static std::string PROP_TYPE;
@@ -45,6 +46,9 @@ namespace idos
             return (t *)this;
         }
         void unpack(const DataPack &pack);
+
+        const std::string& getType()const;
+
         virtual ~IDO();
     };
     

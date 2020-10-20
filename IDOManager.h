@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include "ido.h"
 #include <random>
+#include <memory>
 namespace idos{
     class IDOManager{
     public:
@@ -30,6 +31,16 @@ namespace idos{
 
         Value instantiateIDO(const std::string &type, IDO::ID id, DataPack &init);
         Value instantiateIDO(const std::string &type, DataPack &init);
+        template <typename T>
+        Value instantiateIDO(DataPack &init){
+            std::unique_ptr<T> t = std::make_unique<T>();
+            return this->instantiateIDO(t->getType(), init);
+        }
+        template <typename T>
+        Value instantiateIDO(IDO::ID id, DataPack &init){
+            std::unique_ptr<T> t = std::make_unique<T>();
+            return this->instantiateIDO(t->getType(), init);
+        }
 
         IDO* at(IDO::ID id);
         bool hasValue(IDO::ID id)const;
@@ -37,10 +48,15 @@ namespace idos{
         const std::vector<Value>& getInstancesOfType(const std::string &type);
 
         void registerAlias(const std::string &alias, IDO::ID id);
-        void registerType(const std::string &typeName, IDO* instanceTemplate);
+        void registerType(IDO* instanceTemplate);
 
         void unregisterAlias(const std::string &alias);
         void unregisterType(const std::string &typeName);
+        template<typename T>
+        void unregisterType(){
+            std::unique_ptr t = std::make_unique<T>();
+            this->unregisterType(t->getType());
+        }
 
         ~IDOManager();
     };
