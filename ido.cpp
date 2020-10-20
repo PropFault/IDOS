@@ -17,7 +17,7 @@ DataPack IDO::pack()const{
     return basePack;
 }
 void IDO::unpack(const DataPack &pack){
-    this->type = pack.at(PROP_TYPE).get<std::string>();
+    //this->type = pack.at(PROP_TYPE).get<std::string>();
     try{
         this->displayName = pack.at(PROP_DISPLAY_NAME).get<std::string>();
     }catch(const nlohmann::json::out_of_range &ex){

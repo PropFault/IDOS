@@ -28,10 +28,10 @@ int main(int, char**) {
     idos::DataPack initDaFunny2;
     initDaFunny2[idos::IDO::PROP_TYPE] = std::string("MyCharArray");
     initDaFunny2[CharArrayIDO::PARAMS_TEXT] = std::string("Hello this is your char array :(");
-    auto charArray = manager.instantiateIDO("CharArray", initDaFunny);
+    auto charArray = manager.instantiateIDO<CharArrayIDO>(initDaFunny);
     manager.registerAlias("My char array", charArray.first);
     auto managedCharArray = idos::ManagedValue<CharArrayIDO>(manager, charArray.first);
-    auto charArray2 = idos::ManagedValue<CharArrayIDO>(manager, manager.instantiateIDO("CharArray", initDaFunny2).first);
+    auto charArray2 = idos::ManagedValue<CharArrayIDO>(manager, manager.instantiateIDO<CharArrayIDO>(initDaFunny2).first);
     std::cout<<((CharArrayIDO*)charArray.second)->getText()<<std::endl;
     std::cout<<managedCharArray.getValue()->getText()<<std::endl;
     std::cout<<managedCharArray.getValue()->getText()<<std::endl;
