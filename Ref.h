@@ -1,22 +1,20 @@
 #pragma once
 #include "IDOManager.h"
-#include <iostream>
 namespace idos{
     template<typename T>
-    class ManagedValue{
+    class Ref{
     private:
-        IDOManager& manager;
         IDO::ID identifier;
     public:
-        ManagedValue(IDOManager& manager,const IDO::ID &identifier)
-        :manager(manager), identifier(identifier){
+        Ref(const IDO::ID identifier)
+        :identifier(identifier){
         }
 
-        bool hasValue(){
+        bool hasValue(IDOManager& manager){
             return manager.hasValue(identifier);
         }
 
-        T* getValue(){
+        T* getValue(IDOManager& manager){
             return dynamic_cast<T*>(manager.at(identifier));
         }
         

@@ -32,6 +32,7 @@ namespace idos
 
     public:
         IDO(const std::string &type);
+        IDO(const std::string &type, const std::string &displayName);
         typedef ID_T ID;
 
         const static std::string PROP_TYPE;
@@ -48,6 +49,8 @@ namespace idos
         void unpack(const DataPack &pack);
 
         const std::string& getType()const;
+        const std::string& getDisplayName()const;
+        void setDisplayName(const std::string& name);
 
         virtual ~IDO();
     };

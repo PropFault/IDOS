@@ -1,7 +1,7 @@
 #pragma once
 #include "IDOManager.h"
 #include "IDOSException.h"
-#include "ManagedValue.h"
+#include "ManagedRef.h"
 #include <fstream>
 namespace idos{
     class IDODAO{
@@ -13,7 +13,7 @@ namespace idos{
     public:
         IDODAO(IDOManager &manager);
         template <typename T>
-        ManagedValue<T> loadFromFile(const char *filePath)
+        ManagedRef<T> loadFromFile(const char *filePath)
         {
             std::ifstream file(filePath);
             if(!file.is_open())
@@ -25,13 +25,13 @@ namespace idos{
                 pregenerateAliases(json);
                 //Step 2 - initialise
                 //Build datapacks for all objects and init
-                return ManagedValue<T>(this->manager, loadIDOSFromJSON(json));
+                return ManagedRef<T>(this->manager, loadIDOSFromJSON(json));
             }catch(const nlohmann::detail::parse_error &parseErr){
                 throw idos::IDOSException(std::string("Error parsing file! ") + parseErr.what());
             }
         }
         template<typename T>
-        void saveToFile(const std::string & path, ManagedValue<T> &value){
+        void saveToFile(const std::string & path, ManagedRef<T> &value){
             this->saveToFile(path, value.getValue());
         }
         void saveToFile(const std::string & path, IDO* value);
