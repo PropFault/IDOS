@@ -54,7 +54,7 @@ namespace idos{
         void unregisterType(const std::string &typeName);
         template<typename T>
         void unregisterType(){
-            std::unique_ptr t = std::make_unique<T>();
+            std::unique_ptr<T> t = std::make_unique<T>();
             this->unregisterType(t->getType());
         }
 
