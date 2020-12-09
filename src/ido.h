@@ -16,8 +16,11 @@ namespace idos
         :ID_T(0){}
         operator uint64_t(){return value;}
     };
-    inline bool operator==(const ID_T& lhs, const ID_T& rhs) {
+    inline bool operator==(const ID_T& lhs, const ID_T& rhs){
         return lhs.value == rhs.value;
+    }
+    inline bool operator<(const ID_T& lhs, const ID_T& rhs){
+        return lhs.value < rhs.value;
     }
  
     class IDO

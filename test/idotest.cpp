@@ -1,9 +1,9 @@
-#define BOOST_TEST_MODULE IDO_TEST
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 #include "../src/ido.h"
 using namespace idos;
 #define IDO_FIX_IDOTYPE "IDOFixture"
 #define IDO_FIX_DISPLAYNAME "IDO Test-Fixture :)"
+
 class IDOFixture : public IDO{
 public:
   bool copyConstructorCalled;
@@ -36,54 +36,24 @@ public:
   virtual IDO *clone(){
     return new IDOFixture(*this);
   }
-
+  bool operator==(const IDOFixture &oth)const{
+    return this->pack_ret_val1 == oth.pack_ret_val1 && this->pack_ret_val2 == oth.pack_ret_val2 && this->getDisplayName() == oth.getDisplayName();
+  }
+  bool operator!=(const IDOFixture &oth)const{
+    return !((*this) == oth);
+  }
 };
-/*private:
-        std::string type;
-        std::string displayName;
 
-    protected:
-        virtual void _unpack(const DataPack &pack) = 0;
-
-    public:
-        IDO(const std::string &type);
-        IDO(const std::string &type, const std::string &displayName);
-        typedef ID_T ID;
-
-        const static std::string PROP_TYPE;
-        const static std::string PROP_DISPLAY_NAME;
-        const static std::string PROP_ALIAS;
-        const static std::string PROP_REF;
-        virtual IDO *clone() = 0;
-        DataPack pack() const;
-        template <typename t>
-        t *as()
-        {
-            return (t *)this;
-        }
-        void unpack(const DataPack &pack);
-
-        const std::string& getType()const;
-        const std::string& getDisplayName()const;
-        void setDisplayName(const std::string& name);
-
-        virtual ~IDO();
-    };
-    
-       inline  void to_json(nlohmann::json& j, const IDO::ID& p) {
-            j = nlohmann::json{ {"id", p.value} };
-        }
-
-       inline  void from_json(const nlohmann::json& j, IDO::ID& p) {
-            p.value = j.at("id").get<uint64_t>();
-        }*/
-
-
+std::ostream& operator<<(std::ostream& out, const IDOFixture &oth){
+  out << "IDOFixture{displayname="<<oth.getDisplayName()<<";val1="<<oth.pack_ret_val1<<";val2="<<oth.pack_ret_val2<<"}";
+  return out;
+}
+BOOST_AUTO_TEST_SUITE(IDO_UT)
 BOOST_AUTO_TEST_CASE(pack)
 {
   IDOFixture fixture;
   auto packed = fixture.pack();
-  BOOST_REQUIRE_NO_THROW(packed.at(IDO::PROP_TYPE));
+  BOOST_REQUIRE_NO_THROW(packed.at(idos::IDO::PROP_TYPE));
   BOOST_REQUIRE_NO_THROW(packed.at(IDO::PROP_DISPLAY_NAME));
   BOOST_REQUIRE_NO_THROW(packed.at(fixture.pack_ret_key1));
   BOOST_REQUIRE_NO_THROW(packed.at(fixture.pack_ret_key2));
@@ -127,3 +97,42 @@ BOOST_AUTO_TEST_CASE(unpack_no_displayname){
   BOOST_TEST(fixture.unpack_param_copy.at(fixture.pack_ret_key1) == fixture.pack_ret_val1);
   BOOST_TEST(fixture.unpack_param_copy.at(fixture.pack_ret_key2) == fixture.pack_ret_val2);
 }
+
+
+BOOST_AUTO_TEST_CASE(clone){
+  IDOFixture fixture;
+  IDOFixture* prt;
+  BOOST_REQUIRE_NO_THROW(prt = dynamic_cast<IDOFixture*>(fixture.clone()));
+  BOOST_TEST((*prt) == fixture);
+  prt->pack_ret_val2 = fixture.pack_ret_val2+1;
+  BOOST_TEST((*prt)!=fixture);
+  BOOST_TEST(prt->copyConstructorCalled);
+}
+
+BOOST_AUTO_TEST_CASE(at){
+  IDOFixture fixture;
+  IDO* prt = &fixture;
+  IDOFixture* backCast;
+  BOOST_REQUIRE_NO_THROW(backCast = prt->as<IDOFixture>());
+  BOOST_TEST(backCast != nullptr);
+  BOOST_TEST((*backCast) == fixture);
+  BOOST_REQUIRE_NO_THROW(prt->as<std::vector<std::string>>());
+}
+
+BOOST_AUTO_TEST_CASE(getDisplayName){
+  IDOFixture fixture;
+  BOOST_TEST(fixture.getDisplayName() == IDO_FIX_DISPLAYNAME);
+}
+
+BOOST_AUTO_TEST_CASE(setDisplayName){
+  IDOFixture fixture;
+  std::string newDisplayName("displayNameNew");
+  fixture.setDisplayName(newDisplayName);
+  BOOST_TEST(fixture.getDisplayName() == newDisplayName);
+}
+
+BOOST_AUTO_TEST_CASE(getType){
+  IDOFixture fixture;
+  BOOST_TEST(fixture.getType() == IDO_FIX_IDOTYPE);
+}
+BOOST_AUTO_TEST_SUITE_END()

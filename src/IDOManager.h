@@ -43,6 +43,10 @@ namespace idos{
         }
 
         IDO* at(IDO::ID id);
+        template<typename T>
+        T* at(IDO::ID id){
+            return at(id)->as<T>();
+        }
         bool hasValue(IDO::ID id)const;
 
         const std::vector<Value>& getInstancesOfType(const std::string &type);
@@ -63,6 +67,6 @@ namespace idos{
 };
 
 ////ISsues ye:
-//What happens when IDOS referenced by other IDOS gets fucking deleted?? 
+//What happens when IDOS referenced by other IDOS gets freaking deleted?? 
 ///Solution: Wrap Values in "ManagedObject" type -> access to value always goes through Manager which allows advanced error handling and caching
 //No way of precreating all

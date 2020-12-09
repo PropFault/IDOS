@@ -1,7 +1,7 @@
 #include "ido.h"
 #include "IDOManager.h"
 using namespace idos;
-
+#include <iostream>
 const std::string IDO::PROP_TYPE = "type";
 const std::string IDO::PROP_DISPLAY_NAME = "displayName";
 const std::string IDO::PROP_ALIAS = "alias";
