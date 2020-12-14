@@ -39,7 +39,7 @@ namespace idos{
         template <typename T>
         Value instantiateIDO(IDO::ID id, DataPack &init){
             std::unique_ptr<T> t = std::make_unique<T>();
-            return this->instantiateIDO(t->getType(), init);
+            return this->instantiateIDO(t->getType(),id, init);
         }
 
         IDO* at(IDO::ID id);

@@ -5,6 +5,9 @@
 #include <thread>
 #include <mutex>
 #include "../src/IDOSException.h"
+#include <iostream>
+#include <ctime>
+#include <cstdlib>
 BOOST_AUTO_TEST_SUITE(IDOManager_UT)
 using namespace idos;
 /*
@@ -107,6 +110,15 @@ public:
         return this->getData() == other.getData();
     }
 };
+
+std::ostream& operator<<(std::ostream& out, const IntIDO& dat){
+    out << dat.getData();
+    return out;
+}
+std::ostream& operator<<(std::ostream& out, const StringIDO& dat){
+    out << dat;
+    return out;
+}
 
 struct IDOManagerFixture{
     IDOManager manager;
@@ -249,7 +261,175 @@ BOOST_AUTO_TEST_CASE(instantiateIDO_string_pack){
     BOOST_CHECK_EQUAL(intVal.second->getDisplayName(), "My Numba");
     BOOST_CHECK_EQUAL(intVal.second->getDisplayName(), f.manager.at<IntIDO>(intVal.first)->getDisplayName());
     BOOST_CHECK_EQUAL(intVal.second, f.manager.at<IntIDO>(intVal.first));
+    BOOST_CHECK_EQUAL(stringVal.second, f.manager.at<StringIDO>(stringVal.first));
+    BOOST_CHECK_EQUAL(*stringVal.second->as<StringIDO>(), *f.manager.at<StringIDO>(stringVal.first));
     
 }
 
+BOOST_AUTO_TEST_CASE(instantiateIDO_template_pack){
+    IDOManagerFixture f;
+    initManagerTypes(f.manager);
+    DataPack intPack;
+    intPack[IntIDO_PACK_DATA] = 987654;
+    intPack[IDO::PROP_DISPLAY_NAME] = "My Numba";
+    
+    DataPack stringPack;
+    stringPack[StringIDO_PACK_TEXT] = "Big text";
+    
+    auto stringVal = f.manager.instantiateIDO<StringIDO>(stringPack);
+    auto intVal = f.manager.instantiateIDO<IntIDO>(intPack);
+    BOOST_CHECK_EQUAL(intVal.second->getDisplayName(), "My Numba");
+    BOOST_CHECK_EQUAL(intVal.second->getDisplayName(), f.manager.at<IntIDO>(intVal.first)->getDisplayName());
+    BOOST_CHECK_EQUAL(intVal.second, f.manager.at<IntIDO>(intVal.first));
+    BOOST_CHECK_EQUAL(stringVal.second, f.manager.at<StringIDO>(stringVal.first));
+    BOOST_CHECK_EQUAL(*stringVal.second->as<StringIDO>(), *f.manager.at<StringIDO>(stringVal.first));
+}
+
+BOOST_AUTO_TEST_CASE(instantiateIDO_template_id_pack){
+    IDOManagerFixture f;
+    DataPack StringIDOPack;
+    StringIDOPack[StringIDO_PACK_TEXT] = "Hello :)";
+    StringIDOPack[IDO::PROP_DISPLAY_NAME] = "My fancy new string :)";
+    DataPack IntIDOPack;
+    IntIDOPack[IntIDO_PACK_DATA] = 123456;
+    initManagerTypes(f.manager);
+    auto stringIDOID = f.manager.generateNewID();
+    auto intIDOID = f.manager.generateNewID();
+    IDOManager::Value stringIDO;
+    IDOManager::Value intIDO;
+    BOOST_REQUIRE_NO_THROW(stringIDO = f.manager.instantiateIDO<StringIDO>(stringIDOID, StringIDOPack));
+    BOOST_REQUIRE_NO_THROW(intIDO = f.manager.instantiateIDO<IntIDO>(intIDOID, IntIDOPack));
+
+    BOOST_TEST_CHECKPOINT("Instantiation");
+
+    BOOST_CHECK(stringIDO.second->getType() == "StringIDO");
+    BOOST_CHECK(intIDO.second->getType() == "IntIDO");
+    BOOST_TEST_CHECKPOINT("TypeCheck");
+    BOOST_CHECK_EQUAL(stringIDO.second->getDisplayName(), "My fancy new string :)");
+    BOOST_CHECK_EQUAL((*stringIDO.second->as<StringIDO>()), "Hello :)");
+    BOOST_CHECK_EQUAL(intIDO.second->as<IntIDO>()->getData(), 123456);
+    intIDO.second->as<IntIDO>()->setData(654321);
+    BOOST_CHECK_EQUAL(intIDO.second->as<IntIDO>()->getData(), 654321);
+
+    IntIDO* directIntIDO = f.manager.at<IntIDO>(intIDOID);
+    StringIDO* directStringIDO = f.manager.at(stringIDOID)->as<StringIDO>();
+
+    BOOST_CHECK((*directIntIDO) == (*intIDO.second->as<IntIDO>()));
+    BOOST_CHECK((*directStringIDO) == (*stringIDO.second->as<StringIDO>()));
+}
+
+void initTestValues(IDOManagerFixture &f, IDO::ID &intId, IDOManager::Value& intVal, IDOManager::Value& stringVal){
+    initManagerTypes(f.manager);
+
+    DataPack StringIDOPack;
+    StringIDOPack[StringIDO_PACK_TEXT] = "Hello :)";
+    StringIDOPack[IDO::PROP_DISPLAY_NAME] = "My fancy new string :)";
+    DataPack IntIDOPack;
+    IntIDOPack[IntIDO_PACK_DATA] = 123456;
+
+    intId = f.manager.generateNewID();
+
+    intVal = f.manager.instantiateIDO<IntIDO>(intId, IntIDOPack);
+    stringVal = f.manager.instantiateIDO<StringIDO>(StringIDOPack);
+}
+#define MACRO_STARTUP_SIMPLE     IDOManagerFixture f;\
+    IDO::ID intId;\
+    IDOManager::Value intVal;\
+    IDOManager::Value stringVal;\
+    initTestValues(f, intId, intVal, stringVal);
+
+BOOST_AUTO_TEST_CASE(at){
+    MACRO_STARTUP_SIMPLE
+
+    BOOST_CHECK_EQUAL(intVal.second, f.manager.at(intId));
+    BOOST_CHECK_EQUAL(stringVal.second, f.manager.at(stringVal.first));
+
+    BOOST_CHECK_EQUAL(*intVal.second->as<IntIDO>(), *f.manager.at(intId)->as<IntIDO>());
+    BOOST_CHECK_EQUAL(*stringVal.second->as<StringIDO>(), *f.manager.at(stringVal.first)->as<StringIDO>());
+}
+
+BOOST_AUTO_TEST_CASE(hasValue)
+{
+    MACRO_STARTUP_SIMPLE
+
+    BOOST_CHECK(f.manager.hasValue(intId));
+    BOOST_CHECK(f.manager.hasValue(intVal.first));
+    BOOST_CHECK(f.manager.hasValue(stringVal.first));
+    BOOST_CHECK(!f.manager.hasValue(12345678910));
+}
+
+BOOST_AUTO_TEST_CASE(getInstancesOfType){
+    IDOManagerFixture f;
+    initManagerTypes(f.manager);
+    std::vector<IDOManager::Value> controlValues;
+    srand(time(NULL));
+    for(int i = 0; i < 10000; i++){
+        DataPack pack;
+        pack[StringIDO_PACK_TEXT] = std::to_string(rand());
+        controlValues.push_back(f.manager.instantiateIDO<StringIDO>(pack));
+    }
+    auto list = f.manager.getInstancesOfType("StringIDO");
+    BOOST_CHECK_EQUAL(list.size(), controlValues.size());
+    for(auto& controlValue : controlValues){
+        bool found = false;
+        for(auto& listValue : list){
+            if(listValue == controlValue){
+                found = true;
+                BOOST_CHECK_EQUAL(controlValue.second, listValue.second);
+                BOOST_CHECK_EQUAL(*controlValue.second->as<StringIDO>(), *listValue.second->as<StringIDO>());
+                break;
+            }
+        }
+        BOOST_CHECK(found);
+
+    }
+}
+
+BOOST_AUTO_TEST_CASE(registerAlias){
+    MACRO_STARTUP_SIMPLE
+    std::string intAlias = "AliasString";
+    f.manager.registerAlias(intAlias, intId);
+    BOOST_CHECK_EQUAL(f.manager.getIDForAlias(intAlias), intId);
+}
+
+BOOST_AUTO_TEST_CASE(registerType){
+    IDOManagerFixture f;
+    StringIDO* t = new StringIDO;
+    f.manager.registerType(t);
+    bool found = false;
+    for(auto& val : f.manager.getTypes()){
+        if(val.first == t->getType() && val.second == t){
+            found = true;
+            break;
+        }
+    }
+    BOOST_CHECK(found);
+}
+
+BOOST_AUTO_TEST_CASE(unregisterAlias){
+    MACRO_STARTUP_SIMPLE
+    std::string intAlias = "AliasString";
+    f.manager.registerAlias(intAlias, intId);
+    BOOST_CHECK_EQUAL(f.manager.getIDForAlias(intAlias), intId);
+    f.manager.unregisterAlias(intAlias);
+    BOOST_REQUIRE_THROW(f.manager.getIDForAlias(intAlias), std::out_of_range);
+}
+
+BOOST_AUTO_TEST_CASE(unregisterType){
+    MACRO_STARTUP_SIMPLE
+    DataPack stringPack;
+    stringPack[StringIDO_PACK_TEXT] = "HAHAHA";
+    BOOST_REQUIRE_NO_THROW(f.manager.instantiateIDO("StringIDO", stringPack));
+    f.manager.unregisterType("StringIDO");
+    BOOST_REQUIRE_THROW(f.manager.instantiateIDO("StringIDO", stringPack), IDOSException);
+}
+
+BOOST_AUTO_TEST_CASE(unregisterType_template){
+    MACRO_STARTUP_SIMPLE
+    DataPack stringPack;
+    stringPack[StringIDO_PACK_TEXT] = "HAHAHA";
+    BOOST_REQUIRE_NO_THROW(f.manager.instantiateIDO<StringIDO>(stringPack));
+    f.manager.unregisterType<StringIDO>();
+    BOOST_REQUIRE_THROW(f.manager.instantiateIDO("StringIDO", stringPack), IDOSException);
+}
 BOOST_AUTO_TEST_SUITE_END()

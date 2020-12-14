@@ -22,6 +22,10 @@ namespace idos
     inline bool operator<(const ID_T& lhs, const ID_T& rhs){
         return lhs.value < rhs.value;
     }
+    inline std::ostream &operator<<(std::ostream &out, const ID_T& data){
+        out << data.value;
+        return out;
+    }
  
     class IDO
     {
@@ -64,7 +68,12 @@ namespace idos
 
        inline  void from_json(const nlohmann::json& j, IDO::ID& p) {
             p.value = j.at("id").get<uint64_t>();
-        }
+    }
+    
+    inline std::ostream& operator<<(std::ostream& out, const IDO& dat){
+        out << dat.pack();
+        return out;
+    }
 
 } // namespace idos
 
