@@ -1,7 +1,7 @@
 #include "ido.h"
 #include "IDOManager.h"
 using namespace idos;
-
+#include <iostream>
 const std::string IDO::PROP_TYPE = "type";
 const std::string IDO::PROP_DISPLAY_NAME = "displayName";
 const std::string IDO::PROP_ALIAS = "alias";
@@ -9,6 +9,11 @@ const std::string IDO::PROP_REF = "ref";
 
 IDO::IDO(const std::string &type)
 :type(type){}
+
+IDO::IDO(const std::string &type, const std::string &displayName)
+:type(type), displayName(displayName)
+{}
+
 
 DataPack IDO::pack()const{
     DataPack basePack = this->_pack();
@@ -29,6 +34,13 @@ void IDO::unpack(const DataPack &pack){
 
 const std::string& IDO::getType()const{
     return this->type;
+}
+
+const std::string& IDO::getDisplayName()const{
+    return this->displayName;
+}
+void IDO::setDisplayName(const std::string& name){
+    this->displayName = name;
 }
 
 IDO::~IDO(){}

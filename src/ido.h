@@ -16,8 +16,15 @@ namespace idos
         :ID_T(0){}
         operator uint64_t(){return value;}
     };
-    inline bool operator==(const ID_T& lhs, const ID_T& rhs) {
+    inline bool operator==(const ID_T& lhs, const ID_T& rhs){
         return lhs.value == rhs.value;
+    }
+    inline bool operator<(const ID_T& lhs, const ID_T& rhs){
+        return lhs.value < rhs.value;
+    }
+    inline std::ostream &operator<<(std::ostream &out, const ID_T& data){
+        out << data.value;
+        return out;
     }
  
     class IDO
@@ -32,6 +39,7 @@ namespace idos
 
     public:
         IDO(const std::string &type);
+        IDO(const std::string &type, const std::string &displayName);
         typedef ID_T ID;
 
         const static std::string PROP_TYPE;
@@ -48,6 +56,8 @@ namespace idos
         void unpack(const DataPack &pack);
 
         const std::string& getType()const;
+        const std::string& getDisplayName()const;
+        void setDisplayName(const std::string& name);
 
         virtual ~IDO();
     };
@@ -58,7 +68,12 @@ namespace idos
 
        inline  void from_json(const nlohmann::json& j, IDO::ID& p) {
             p.value = j.at("id").get<uint64_t>();
-        }
+    }
+    
+    inline std::ostream& operator<<(std::ostream& out, const IDO& dat){
+        out << dat.pack();
+        return out;
+    }
 
 } // namespace idos
 

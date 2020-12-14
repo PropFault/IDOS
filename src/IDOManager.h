@@ -39,10 +39,14 @@ namespace idos{
         template <typename T>
         Value instantiateIDO(IDO::ID id, DataPack &init){
             std::unique_ptr<T> t = std::make_unique<T>();
-            return this->instantiateIDO(t->getType(), init);
+            return this->instantiateIDO(t->getType(),id, init);
         }
 
         IDO* at(IDO::ID id);
+        template<typename T>
+        T* at(IDO::ID id){
+            return at(id)->as<T>();
+        }
         bool hasValue(IDO::ID id)const;
 
         const std::vector<Value>& getInstancesOfType(const std::string &type);
@@ -54,7 +58,7 @@ namespace idos{
         void unregisterType(const std::string &typeName);
         template<typename T>
         void unregisterType(){
-            std::unique_ptr t = std::make_unique<T>();
+            std::unique_ptr<T> t = std::make_unique<T>();
             this->unregisterType(t->getType());
         }
 
@@ -63,6 +67,6 @@ namespace idos{
 };
 
 ////ISsues ye:
-//What happens when IDOS referenced by other IDOS gets fucking deleted?? 
+//What happens when IDOS referenced by other IDOS gets freaking deleted?? 
 ///Solution: Wrap Values in "ManagedObject" type -> access to value always goes through Manager which allows advanced error handling and caching
 //No way of precreating all

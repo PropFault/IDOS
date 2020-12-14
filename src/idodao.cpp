@@ -81,6 +81,7 @@ DataPack prepareIDsForSerialization(DataPack &pack, idos::IDOManager & manager, 
             }
         }
     }
+    std::cout<<"Collapsed to: " << pack<<std::endl;
     try{
         auto id = pack.get<IDO::ID>();
         try{
@@ -89,14 +90,19 @@ DataPack prepareIDsForSerialization(DataPack &pack, idos::IDOManager & manager, 
             return nPack;
         }catch(const IDOSException &noAlias){
             try{
-                return manager.at(id)->pack();
+                auto packed = manager.at(id)->pack();
+                std::cout<<"PACKED TO: " << packed << std::endl;
+                return prepareIDsForSerialization(packed, manager, isRoot);
             }catch(const std::out_of_range &noIDOS){
                 throw IDOSException("[SERIALIZATION]: Failed resolving IDOS: Detected ID which does not have an alias and does not exist in the provided manager");
             }
         }
     }catch(const nlohmann::json::out_of_range &fullErr){
         if(!isRoot)
-            throw IDOSException("[SERIALIZATION]: Failed resolving IDOS: DataPack contains nested object-type that does not provide an ID property.");
+            std::cout<<"Could not resolve id in part: " << pack << std::endl;
+            //throw IDOSException("[SERIALIZATION]: Failed resolving IDOS: DataPack contains nested object-type that does not provide an ID property.");
+    
+       return pack;
     }
     return pack;
 }

@@ -2,7 +2,7 @@
 #include "ido.h"
 #include "IDOManager.h"
 #include "CharArrayIDO.h"
-#include "ManagedValue.h"
+#include "ManagedRef.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include "idodao.h"
@@ -30,8 +30,8 @@ int main(int, char**) {
     initDaFunny2[CharArrayIDO::PARAMS_TEXT] = std::string("Hello this is your char array :(");
     auto charArray = manager.instantiateIDO<CharArrayIDO>(initDaFunny);
     manager.registerAlias("My char array", charArray.first);
-    auto managedCharArray = idos::ManagedValue<CharArrayIDO>(manager, charArray.first);
-    auto charArray2 = idos::ManagedValue<CharArrayIDO>(manager, manager.instantiateIDO<CharArrayIDO>(initDaFunny2).first);
+    auto managedCharArray = idos::ManagedRef<CharArrayIDO>(manager, charArray.first);
+    auto charArray2 = idos::ManagedRef<CharArrayIDO>(manager, manager.instantiateIDO<CharArrayIDO>(initDaFunny2).first);
     std::cout<<((CharArrayIDO*)charArray.second)->getText()<<std::endl;
     std::cout<<managedCharArray.getValue()->getText()<<std::endl;
     std::cout<<managedCharArray.getValue()->getText()<<std::endl;

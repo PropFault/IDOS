@@ -71,6 +71,13 @@
         "strstream": "cpp",
         "iomanip": "cpp",
         "cfenv": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "*.ipp": "cpp",
+        "chrono": "cpp",
+        "ratio": "cpp",
+        "thread": "cpp",
+        "condition_variable": "cpp",
+        "unordered_set": "cpp",
+        "mutex": "cpp"
     }
 }
