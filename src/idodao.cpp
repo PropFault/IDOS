@@ -7,10 +7,14 @@
 #include "IDOSException.h"
 #include <sstream>
 #include "ido.h"
+#include "datapack.h"
+#include "datapackJSONConverter.h"
+#include "Ref.h"
 using namespace idos;
 
 IDODAO::IDODAO(IDOManager &manager)
     : manager(manager) {}
+
 
 void IDODAO::pregenerateAliases(const nlohmann::json &json)
 {
@@ -29,24 +33,24 @@ void IDODAO::pregenerateAliases(const nlohmann::json &json)
     }
 }
 
-IDO::ID IDODAO::loadIDOSFromJSON(const nlohmann::json &json)
+ID IDODAO::loadIDOSFromJSON(const nlohmann::json &json)
 {
-    DataPack dataPack(json);
+    DataPack dataPack = json.get<DataPack>();
     for (auto &el : json.items())
     {
         if (el.value().type() == nlohmann::json::value_t::object)
-            dataPack[el.key()] = loadIDOSFromJSON(el.value());
+            dataPack[el.key()] = idos::UntypedRef(this->manager, loadIDOSFromJSON(el.value()));
         if(el.value().type() == nlohmann::json::value_t::array){
             int idx = 0;
             for(auto &i : el.value().items()){
                 if(i.value().type() == nlohmann::json::value_t::object){
-                    dataPack[el.key()][idx] = loadIDOSFromJSON(i.value());
+                    dataPack[el.key()][idx] = idos::UntypedRef(this->manager, loadIDOSFromJSON(i.value()));
                 }
                 idx++;
             }
         }
     }
-    std::cout<<dataPack<<std::endl;
+    //std::cout<<dataPack<<std::endl;
     try
     {
         return manager.instantiateIDO(json.at(IDO::PROP_TYPE), manager.getIDForAlias(json.at(IDO::PROP_ALIAS)), dataPack).first;
@@ -66,8 +70,9 @@ IDO::ID IDODAO::loadIDOSFromJSON(const nlohmann::json &json)
 }
 
 
-DataPack prepareIDsForSerialization(DataPack &pack, idos::IDOManager & manager, bool isRoot = true){
-    for(auto& elem : pack.items()){
+nlohmann::json prepareIDsForSerialization(nlohmann::json pack, idos::IDOManager & manager, bool isRoot = true){
+    std::cout<<"PREP: " << pack << std::endl;
+     for(auto& elem : pack.items()){
         if(elem.value().type() == nlohmann::json::value_t::object){
             pack[elem.key()] = prepareIDsForSerialization(elem.value(), manager, false); 
         }
@@ -83,7 +88,8 @@ DataPack prepareIDsForSerialization(DataPack &pack, idos::IDOManager & manager, 
     }
     std::cout<<"Collapsed to: " << pack<<std::endl;
     try{
-        auto id = pack.get<IDO::ID>();
+        auto id = pack.get<ID>();
+        std::cout<<"ID" << id<<std::endl;
         try{
             DataPack nPack;
             nPack["ref"] = manager.getAliasForID(id);
@@ -99,7 +105,7 @@ DataPack prepareIDsForSerialization(DataPack &pack, idos::IDOManager & manager, 
         }
     }catch(const nlohmann::json::out_of_range &fullErr){
         if(!isRoot)
-            std::cout<<"Could not resolve id in part: " << pack << std::endl;
+            std::cout<<"Could not resolve id in part: " << nlohmann::json(pack) << std::endl;
             //throw IDOSException("[SERIALIZATION]: Failed resolving IDOS: DataPack contains nested object-type that does not provide an ID property.");
     
        return pack;
@@ -109,8 +115,8 @@ DataPack prepareIDsForSerialization(DataPack &pack, idos::IDOManager & manager, 
 void IDODAO::saveToFile(const std::string & path, IDO* value){
     std::stringstream outData;
     auto pack = value->pack();
-    prepareIDsForSerialization(pack,manager);
-    outData << pack;
+    nlohmann::json jpack = pack;
+    outData << prepareIDsForSerialization(jpack,manager);
     
     std::ofstream outFile(path);
     if(outFile.is_open()){

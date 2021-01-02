@@ -2,10 +2,11 @@
 #include "ido.h"
 #include "IDOManager.h"
 #include "CharArrayIDO.h"
-#include "ManagedRef.h"
+#include "Ref.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include "idodao.h"
+#include "Ref.h"
 int main(int, char**) {
     idos::IDOManager manager;
     idos::IDODAO dao(manager);
@@ -14,13 +15,16 @@ int main(int, char**) {
     
 
 
-    auto daFunny = dao.loadFromFile<CharArrayIDO>("./../../test.json");
+    auto daFunny = idos::Ref<CharArrayIDO>(dao.loadFromFile("../../../test.json"));
+    for(auto &r:manager.getInstances()){
+        std::cout<<r.first<<"|"<<r.second->getType()<<std::endl;
+    }
     dao.saveToFile("./save.json", daFunny);
     auto id = daFunny.getIdentifier();
     std::cout << daFunny.getValue()->getText() << std::endl;
     std::cout << manager.at(id)->as<CharArrayIDO>()->getText()<< std::endl;
     std::cout << daFunny.getValue()->self << "=" << id<< std::endl;
-    std::cout << "PRINTING SELF: " << manager.at(daFunny.getValue()->self)->as<CharArrayIDO>()->getText() << std::endl;
+    std::cout << "PRINTING SELF: " <<daFunny.getValue()->self.getValue()->getText() << std::endl;
 
     idos::DataPack initDaFunny;
     initDaFunny[idos::IDO::PROP_TYPE] = std::string("MyCharArray");
@@ -30,15 +34,6 @@ int main(int, char**) {
     initDaFunny2[CharArrayIDO::PARAMS_TEXT] = std::string("Hello this is your char array :(");
     auto charArray = manager.instantiateIDO<CharArrayIDO>(initDaFunny);
     manager.registerAlias("My char array", charArray.first);
-    auto managedCharArray = idos::ManagedRef<CharArrayIDO>(manager, charArray.first);
-    auto charArray2 = idos::ManagedRef<CharArrayIDO>(manager, manager.instantiateIDO<CharArrayIDO>(initDaFunny2).first);
-    std::cout<<((CharArrayIDO*)charArray.second)->getText()<<std::endl;
-    std::cout<<managedCharArray.getValue()->getText()<<std::endl;
-    std::cout<<managedCharArray.getValue()->getText()<<std::endl;
-    
-    std::cout<<charArray2.getValue()->getText()<<std::endl;
-    charArray2.getValue()->setText("I changed this haha >:)");
-    std::cout<<charArray2.getValue()->getText()<<std::endl;
     std::cout<<((CharArrayIDO*)manager.getAlias("My char array").second)->getText()<<std::endl;
 
     std::cout<<"Instance list"<<std::endl;
@@ -47,4 +42,7 @@ int main(int, char**) {
         std::cout<<instance.second->as<CharArrayIDO>()->getText()<<"\t";
     }
     std::cout<<std::endl;
+    
+    auto loaded = idos::Ref<CharArrayIDO>(dao.loadFromFile("./save.json"));
+    std::cout<<loaded.getValue()->pack()<<std::endl;
 }

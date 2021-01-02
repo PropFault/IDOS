@@ -24,7 +24,7 @@ conan_cmake_run(REQUIRES nlohmann_json/3.9.1  boost_test/1.69.0@bincrafters/stab
                 BUILD missing)
             
 
-add_executable(IDOSUnitTest main_unit_test.cpp idotest.cpp IDOManagerTest.cpp)
+add_executable(IDOSUnitTest main_unit_test.cpp idotest.cpp IDOManagerTest.cpp DataPackTest.cpp)
 set_property(TARGET IDOSUnitTest PROPERTY CXX_STANDARD 17)
 target_link_libraries(IDOSUnitTest IDOS)
 target_link_libraries(IDOSUnitTest ${CONAN_LIBS})
@@ -32,3 +32,4 @@ set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
 add_test(NAME IDOS_Unit_Test COMMAND IDOSUnitTest -x true)
+# --log_level=all

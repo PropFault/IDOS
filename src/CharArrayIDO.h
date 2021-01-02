@@ -4,15 +4,16 @@
 #include <memory>
 #include "IDOManager.h"
 #include <vector>
+#include "Ref.h"
 class CharArrayIDO : public idos::IDO{
 private:
     char* text = NULL;
-    std::vector<ID> texts;
+    std::vector<idos::Ref<CharArrayIDO>> texts;
 protected:
     virtual idos::DataPack _pack()const;
     virtual void _unpack(const idos::DataPack &pack);
 public:
-    IDO::ID self;
+    idos::Ref<CharArrayIDO> self;
 
     CharArrayIDO();
     CharArrayIDO(const CharArrayIDO& other);

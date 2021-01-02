@@ -1,32 +1,11 @@
 #pragma once
 #include <string>
-#include "datapack.h"
 #include <random>
 #include <nlohmann/json.hpp>
-
+#include "idoId.h"
 namespace idos
 {
-    class IDOManager;
-    class ID_T{
-        public:
-        uint64_t value;
-        ID_T(const uint64_t& wrap)
-        :value(wrap){}
-        ID_T()
-        :ID_T(0){}
-        operator uint64_t(){return value;}
-    };
-    inline bool operator==(const ID_T& lhs, const ID_T& rhs){
-        return lhs.value == rhs.value;
-    }
-    inline bool operator<(const ID_T& lhs, const ID_T& rhs){
-        return lhs.value < rhs.value;
-    }
-    inline std::ostream &operator<<(std::ostream &out, const ID_T& data){
-        out << data.value;
-        return out;
-    }
- 
+    class DataPack;
     class IDO
     {
     private:
@@ -40,8 +19,7 @@ namespace idos
     public:
         IDO(const std::string &type);
         IDO(const std::string &type, const std::string &displayName);
-        typedef ID_T ID;
-
+        
         const static std::string PROP_TYPE;
         const static std::string PROP_DISPLAY_NAME;
         const static std::string PROP_ALIAS;
@@ -55,36 +33,32 @@ namespace idos
         }
         void unpack(const DataPack &pack);
 
-        const std::string& getType()const;
-        const std::string& getDisplayName()const;
-        void setDisplayName(const std::string& name);
+        const std::string &getType() const;
+        const std::string &getDisplayName() const;
+        void setDisplayName(const std::string &name);
 
         virtual ~IDO();
     };
-    
-       inline  void to_json(nlohmann::json& j, const IDO::ID& p) {
-            j = nlohmann::json{ {"id", p.value} };
-        }
 
-       inline  void from_json(const nlohmann::json& j, IDO::ID& p) {
-            p.value = j.at("id").get<uint64_t>();
-    }
-    
-    inline std::ostream& operator<<(std::ostream& out, const IDO& dat){
-        out << dat.pack();
+   
+    inline std::ostream &operator<<(std::ostream &out, const IDO &dat)
+    {
+        //out << dat.pack();
+        out << dat.getType() << "|" << dat.getDisplayName();
         return out;
-    }
+    };
 
 } // namespace idos
 
 namespace std
 {
-    template<> struct hash<idos::ID_T>
+    template <>
+    struct hash<idos::ID>
     {
-        std::size_t operator()(idos::ID_T const& s) const noexcept
+        std::size_t operator()(idos::ID const &s) const noexcept
         {
             std::size_t h1 = std::hash<uint64_t>{}(s.value);
             return h1;
         }
     };
-}
+} // namespace std
