@@ -1,5 +1,6 @@
 #include "ido.h"
 #include "IDOManager.h"
+#include "datapack.h"
 using namespace idos;
 #include <iostream>
 const std::string IDO::PROP_TYPE = "type";
@@ -25,7 +26,7 @@ void IDO::unpack(const DataPack &pack){
     //this->type = pack.at(PROP_TYPE).get<std::string>();
     try{
         this->displayName = pack.at(PROP_DISPLAY_NAME).get<std::string>();
-    }catch(const nlohmann::json::out_of_range &ex){
+    }catch(const std::out_of_range &ex){
         //this->displayName = "not set";
     }
     this->_unpack(pack);

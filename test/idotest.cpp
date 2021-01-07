@@ -1,5 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include "../src/ido.h"
+#include "../src/datapack.h"
 using namespace idos;
 #define IDO_FIX_IDOTYPE "IDOFixture"
 #define IDO_FIX_DISPLAYNAME "IDO Test-Fixture :)"
@@ -90,7 +91,7 @@ BOOST_AUTO_TEST_CASE(unpack_no_displayname){
   pack[fixture.pack_ret_key2] = fixture.pack_ret_val2;
   fixture.unpack(pack);
 
-  BOOST_REQUIRE_THROW(fixture.unpack_param_copy.at(IDO::PROP_DISPLAY_NAME), nlohmann::json::out_of_range); // freaking nlohmann. i shouldn't have this library be so interconnected with my own stuff
+  BOOST_REQUIRE_THROW(fixture.unpack_param_copy.at(IDO::PROP_DISPLAY_NAME), std::out_of_range);
   BOOST_REQUIRE_NO_THROW(fixture.unpack_param_copy.at(fixture.pack_ret_key1));
   BOOST_REQUIRE_NO_THROW(fixture.unpack_param_copy.at(fixture.pack_ret_key2));
   BOOST_TEST(fixture.getDisplayName() == IDO_FIX_DISPLAYNAME);

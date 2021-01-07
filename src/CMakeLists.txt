@@ -18,7 +18,7 @@ conan_cmake_run(REQUIRES nlohmann_json/3.9.1
                 BUILD missing)
 
 
-add_library(IDOS ido.cpp IDOManager.cpp ManagedRef.cpp CharArrayIDO.cpp idodao.cpp)
-#add_executable(IDOS main.cpp ido.cpp IDOManager.cpp ManagedRef.cpp CharArrayIDO.cpp idodao.cpp)
+add_library(IDOS ido.cpp IDOManager.cpp CharArrayIDO.cpp idodao.cpp)
+#add_executable(IDOS main.cpp ido.cpp IDOManager.cpp CharArrayIDO.cpp idodao.cpp)
 set_property(TARGET IDOS PROPERTY CXX_STANDARD 17)
 target_link_libraries(IDOS ${CONAN_LIBS})

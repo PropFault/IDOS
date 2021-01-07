@@ -8,6 +8,7 @@
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
+#include "../src/datapack.h"
 BOOST_AUTO_TEST_SUITE(IDOManager_UT)
 using namespace idos;
 /*
@@ -74,7 +75,7 @@ public:
         return pack;
     }
     virtual void _unpack(const DataPack &pack){
-        this->assign(pack.at(StringIDO_PACK_TEXT));
+        this->assign(pack.at(StringIDO_PACK_TEXT).get<std::string>());
     }
 };
 
@@ -166,7 +167,7 @@ BOOST_AUTO_TEST_CASE(hasAlias){
     BOOST_CHECK(f.manager.hasAlias(alias2));
 }
 
-void testId(IDOManagerFixture &f, std::unordered_set<IDO::ID>& ids, std::mutex &mutex, std::mutex &genmutex){
+void testId(IDOManagerFixture &f, std::unordered_set<ID>& ids, std::mutex &mutex, std::mutex &genmutex){
     while(true){
         genmutex.lock();
         auto newID = f.manager.generateNewID();
@@ -188,7 +189,7 @@ void testId(IDOManagerFixture &f, std::unordered_set<IDO::ID>& ids, std::mutex &
 
 BOOST_AUTO_TEST_CASE(generateNewID){
     IDOManagerFixture f;
-    std::unordered_set<IDO::ID> ids;
+    std::unordered_set<ID> ids;
     std::mutex idmutex;
     std::mutex genmutex;
     std::thread c1(testId,std::ref(f),std::ref(ids),std::ref(idmutex), std::ref(genmutex));
@@ -221,7 +222,7 @@ BOOST_AUTO_TEST_CASE(instantiateIDO_string_id_datapack){
     StringIDOPack[StringIDO_PACK_TEXT] = "Hello :)";
     StringIDOPack[IDO::PROP_DISPLAY_NAME] = "My fancy new string :)";
     DataPack IntIDOPack;
-    IntIDOPack[IntIDO_PACK_DATA] = 123456;
+    IntIDOPack[IntIDO_PACK_DATA] = (int64_t)123456;
     initManagerTypes(f.manager);
     auto stringIDOID = f.manager.generateNewID();
     auto intIDOID = f.manager.generateNewID();
@@ -249,7 +250,7 @@ BOOST_AUTO_TEST_CASE(instantiateIDO_string_pack){
     IDOManagerFixture f;
     initManagerTypes(f.manager);
     DataPack intPack;
-    intPack[IntIDO_PACK_DATA] = 987654;
+    intPack[IntIDO_PACK_DATA] = (int64_t)987654;
     intPack[IDO::PROP_DISPLAY_NAME] = "My Numba";
     
     DataPack stringPack;
@@ -318,7 +319,7 @@ BOOST_AUTO_TEST_CASE(instantiateIDO_template_id_pack){
     BOOST_CHECK((*directStringIDO) == (*stringIDO.second->as<StringIDO>()));
 }
 
-void initTestValues(IDOManagerFixture &f, IDO::ID &intId, IDOManager::Value& intVal, IDOManager::Value& stringVal){
+void initTestValues(IDOManagerFixture &f, ID &intId, IDOManager::Value& intVal, IDOManager::Value& stringVal){
     initManagerTypes(f.manager);
 
     DataPack StringIDOPack;
@@ -333,7 +334,7 @@ void initTestValues(IDOManagerFixture &f, IDO::ID &intId, IDOManager::Value& int
     stringVal = f.manager.instantiateIDO<StringIDO>(StringIDOPack);
 }
 #define MACRO_STARTUP_SIMPLE     IDOManagerFixture f;\
-    IDO::ID intId;\
+    ID intId;\
     IDOManager::Value intVal;\
     IDOManager::Value stringVal;\
     initTestValues(f, intId, intVal, stringVal);

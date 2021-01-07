@@ -1,16 +1,18 @@
 #pragma once
 #include <unordered_map>
+#include "idoId.h"
 #include "ido.h"
 #include <random>
 #include <memory>
 namespace idos{
+    class DataPack;
     class IDOManager{
     public:
-        typedef std::pair<IDO::ID, IDO*> Value;
+        typedef std::pair<ID, IDO*> Value;
     private: 
-        std::unordered_map<std::string, IDO::ID> alias;
+        std::unordered_map<std::string, ID> alias;
         std::unordered_map<std::string, IDO*> types;
-        std::unordered_map<IDO::ID, IDO*> instances;
+        std::unordered_map<ID, IDO*> instances;
         std::unordered_map<std::string, std::vector<Value>> instancesByType;
         std::uniform_int_distribution<unsigned long long> dis; 
         std::random_device rand;
@@ -19,39 +21,43 @@ namespace idos{
         :dis(std::numeric_limits<std::uint64_t>::min(),
         std::numeric_limits<std::uint64_t>::max()){}
 
-        const std::unordered_map<std::string, IDO::ID> &getAliasList()const;
+        const std::unordered_map<ID, IDO*>& getInstances()const{
+            return this->instances;
+        }
+
+        const std::unordered_map<std::string, ID> &getAliasList()const;
         const std::unordered_map<std::string, IDO*> &getTypes()const; 
 
         Value getAlias(const std::string &alias);
-        IDO::ID getIDForAlias(const std::string& alias)const;
-        std::string getAliasForID(const IDO::ID& id)const;
+        ID getIDForAlias(const std::string& alias)const;
+        std::string getAliasForID(const ID& id)const;
         bool hasAlias(const std::string &alias)const;
 
-        IDO::ID generateNewID();
+        ID generateNewID();
 
-        Value instantiateIDO(const std::string &type, IDO::ID id, DataPack &init);
-        Value instantiateIDO(const std::string &type, DataPack &init);
+        Value instantiateIDO(const std::string &type, ID id, const DataPack &init);
+        Value instantiateIDO(const std::string &type, const DataPack &init);
         template <typename T>
-        Value instantiateIDO(DataPack &init){
+        Value instantiateIDO(const DataPack &init){
             std::unique_ptr<T> t = std::make_unique<T>();
             return this->instantiateIDO(t->getType(), init);
         }
         template <typename T>
-        Value instantiateIDO(IDO::ID id, DataPack &init){
+        Value instantiateIDO(ID id,const DataPack &init){
             std::unique_ptr<T> t = std::make_unique<T>();
             return this->instantiateIDO(t->getType(),id, init);
         }
 
-        IDO* at(IDO::ID id);
+        IDO* at(ID id);
         template<typename T>
-        T* at(IDO::ID id){
+        T* at(ID id){
             return at(id)->as<T>();
         }
-        bool hasValue(IDO::ID id)const;
+        bool hasValue(ID id)const;
 
         const std::vector<Value>& getInstancesOfType(const std::string &type);
 
-        void registerAlias(const std::string &alias, IDO::ID id);
+        void registerAlias(const std::string &alias, ID id);
         void registerType(IDO* instanceTemplate);
 
         void unregisterAlias(const std::string &alias);
