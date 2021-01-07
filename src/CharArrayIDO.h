@@ -21,6 +21,8 @@ public:
     const char* getText();
     void setText(const char* text);
 
+    std::vector<idos::Ref<CharArrayIDO>> getTexts()const;
+
     virtual IDO* clone();
     virtual ~CharArrayIDO();
 };

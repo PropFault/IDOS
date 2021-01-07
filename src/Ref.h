@@ -14,6 +14,9 @@ namespace idos{
         UntypedRef(IDOManager& manager, const ID identifier)
         :manager(&manager), identifier(identifier){
         }
+        UntypedRef(IDOManager& manager, const IDOManager::Value &value)
+        :manager(&manager), identifier(value.first){}
+
         virtual bool hasValue(){
             if(manager == nullptr)
                 throw IDOSException("REFERENCE UNINITIALISED");
@@ -50,15 +53,15 @@ namespace idos{
         Ref(IDOManager& manager, const ID identifier)
         :UntypedRef(manager,identifier){
         }
-
         Ref(const UntypedRef &ref)
         :UntypedRef(ref){}
+        Ref(IDOManager& manager, const IDOManager::Value &value)
+        :UntypedRef(manager, value.first){}
 
         T* getValue()const override{
             return dynamic_cast<T*>(UntypedRef::getValue());
         }
         
-
     };
     inline  void to_json(nlohmann::json& j, const UntypedRef& p) {
         try{

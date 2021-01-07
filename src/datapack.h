@@ -214,10 +214,12 @@ namespace idos{
             this->value.emplace<unsigned long long>(ll);
         }
 
+        void set(const float d){
+            this->value.emplace<float>(d);
+        }
         void set(const double d){
             this->value.emplace<double>(d);
         }
-
 
         void set(const bool b){
             this->value.emplace<bool>(b);
@@ -268,10 +270,10 @@ namespace idos{
         Data(const unsigned long long& t){
             this->set(t);
         }
-        Data(const double& t){
+        Data(const float& t){
             this->set(t);
         }
-        Data(const float& t){
+        Data(const double& t){
             this->set(t);
         }
         Data(const bool& t){

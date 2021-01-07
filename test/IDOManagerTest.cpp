@@ -188,7 +188,7 @@ void testId(IDOManagerFixture &f, std::unordered_set<ID>& ids, std::mutex &mutex
 }
 
 BOOST_AUTO_TEST_CASE(generateNewID){
-    /*IDOManagerFixture f;
+    IDOManagerFixture f;
     std::unordered_set<ID> ids;
     std::mutex idmutex;
     std::mutex genmutex;
@@ -207,7 +207,7 @@ BOOST_AUTO_TEST_CASE(generateNewID){
     c5.join();
     c6.join();
     c7.join();
-    c8.join();*/
+    c8.join();
     BOOST_CHECK(true);
 }
 

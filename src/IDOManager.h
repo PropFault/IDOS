@@ -35,15 +35,15 @@ namespace idos{
 
         ID generateNewID();
 
-        Value instantiateIDO(const std::string &type, ID id, DataPack &init);
-        Value instantiateIDO(const std::string &type, DataPack &init);
+        Value instantiateIDO(const std::string &type, ID id, const DataPack &init);
+        Value instantiateIDO(const std::string &type, const DataPack &init);
         template <typename T>
-        Value instantiateIDO(DataPack &init){
+        Value instantiateIDO(const DataPack &init){
             std::unique_ptr<T> t = std::make_unique<T>();
             return this->instantiateIDO(t->getType(), init);
         }
         template <typename T>
-        Value instantiateIDO(ID id, DataPack &init){
+        Value instantiateIDO(ID id,const DataPack &init){
             std::unique_ptr<T> t = std::make_unique<T>();
             return this->instantiateIDO(t->getType(),id, init);
         }

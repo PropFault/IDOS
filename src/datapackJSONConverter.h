@@ -60,7 +60,11 @@ namespace idos{
          j = *p;
      }
     inline void to_json(nlohmann::json& j, const DataPack& p) {
-        j = p.getData();
+        //j = p.getData();
+        for(auto& row : p.getData()){
+            std::cout<<row.first << " -> " << row.second.get()->getType() << std::endl;
+            j[row.first] = *row.second;
+        }
     }
 
     inline void to_json(nlohmann::json &j, const DataArray &p){
@@ -85,8 +89,10 @@ namespace idos{
                 break;
             case nlohmann::json::value_t::number_unsigned:
                 p = j.get<unsigned long long>();
+                break;
             case nlohmann::json::value_t::number_float:
                 p = j.get<float>();
+                break;
             case nlohmann::json::value_t::object:
                 p = j.get<DataPack>();
                 break;

@@ -35,7 +35,9 @@ void IDODAO::pregenerateAliases(const nlohmann::json &json)
 
 ID IDODAO::loadIDOSFromJSON(const nlohmann::json &json)
 {
+    std::cout<<"JSON INPUT: " << json << " of tipe " << json.type_name() << std::endl;
     DataPack dataPack = json.get<DataPack>();
+    std::cout << dataPack << std::endl;
     for (auto &el : json.items())
     {
         if (el.value().type() == nlohmann::json::value_t::object)

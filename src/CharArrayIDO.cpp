@@ -69,3 +69,7 @@ idos::IDO* CharArrayIDO::clone(){
 CharArrayIDO::~CharArrayIDO(){
     delete[] this->text;
 }
+
+std::vector<idos::Ref<CharArrayIDO>> CharArrayIDO::getTexts()const{
+    return this->texts;
+}

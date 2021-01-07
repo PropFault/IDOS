@@ -45,7 +45,7 @@ ID IDOManager::generateNewID(){
     return this->dis(this->rand);
 }
 
-IDOManager::Value IDOManager::instantiateIDO(const std::string &type, ID id, DataPack &init){
+IDOManager::Value IDOManager::instantiateIDO(const std::string &type, ID id,const DataPack &init){
     IDO* newValue = nullptr;
     try{
         newValue = this->types.at(type)->clone();
@@ -59,7 +59,7 @@ IDOManager::Value IDOManager::instantiateIDO(const std::string &type, ID id, Dat
     return wrap;
 }
 
-IDOManager::Value IDOManager::instantiateIDO(const std::string &type, DataPack &init){
+IDOManager::Value IDOManager::instantiateIDO(const std::string &type,const DataPack &init){
     return this->instantiateIDO(type, this->generateNewID(), init);
 }
 
